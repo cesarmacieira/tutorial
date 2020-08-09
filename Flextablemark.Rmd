@@ -1,0 +1,136 @@
+---
+title: "Tutorial"
+output: md_document
+---
+
+#Flextable
+
+##Instalação dos pacotes
+```{r}
+if(!require(dplyr)){install.packages("dplyr");require(dplyr)}
+if(!require(officer)){install.packages("officer");require(officer)}
+if(!require(flextable)){install.packages("flextable");require(flextable)}
+```
+
+#### Exemplo
+Dados
+```{r}
+data(iris)
+```
+
+Ajuste automático dos parâmetros da tabela
+```{r}
+autofit(flextable(rbind(head(iris, n = 7),tail(iris,n=6))))
+```
+
+Construção da tabela
+```{r}
+ex1 <- flextable(rbind(head(iris, n = 7),tail(iris,n=6)))
+ex1
+```
+
+Comando alternativo para criar tabela simples
+```{r}
+regulartable(rbind(head(iris, n = 7),tail(iris,n=6)))
+```
+
+Alinhamento do texto
+```{r}
+align(ex1, align = "center", part = "all" )
+```
+
+Marcar caselas que satisfaçam as condições especificadas destas colunas/linhas
+```{r}
+color(ex1, i = ~ Sepal.Length < 5.1, #i = linhas selecionadas
+      j = ~ Sepal.Length+Petal.Length,#j = colunas 
+      color = "red")
+```
+
+Negrito valores internos
+bold(ex1, i = ~ Petal.Width == 0.200, j = "Petal.Width", bold = TRUE)
+```{r}
+bold(ex1, i = ~ Petal.Width == 0.200, j = "Petal.Width", bold = TRUE)
+```
+
+Negrito cabeçalho
+```{r}
+bold(ex1, part = "header")
+```
+
+Colorir caselas
+```{r}
+bg(ex1, i = ~ Petal.Length > 1.4, j = ~ Species, bg = "green")Comprimento da pétala maior que 1.4
+```
+
+Alterar tamanho da fonte do cabeçalho
+```{r}
+fontsize(ex1, part = "header", size = 10)
+```
+
+Alterar tamanho da fonte do corpo
+```{r}
+fontsize(ex1, part = "body", size = 10)
+```
+
+Troca a fonte de uma coluna específica
+```{r}
+font(ex1, j = "Species", fontname = "Calibri")
+```
+
+Troca a fonte da tabela toda
+```{r}
+font(ex1, part = "all", fontname = "Times")
+```
+
+Largura das colunas
+```{r}
+width(ex1,width = 1)
+```
+
+Comprimento (altura) das linhas
+```{r}
+height(ex1,height= 0.45)
+```
+
+
+Bordas
+```{r}
+vline(ex1, border = fp_border(color="orange", style = "dashed"), part = "all" )
+vline_left(ex1, border = fp_border(color="orange", width = 3), part = "all" )
+vline_right(ex1, border = fp_border(color="orange", width = 3), part = "all" )
+hline(ex1, border = fp_border(color="orange", style = "dashed"))
+hline_bottom(ex1, border = fp_border(color="orange", width = 3))
+hline_top(ex1, border = fp_border(color="orange", width = 3), part = "all" )
+border_remove(ex1)
+```
+
+Temas de tabela padrões
+```{r}
+theme_booktabs(ex1)Default
+theme_alafoli(ex1)
+theme_box(ex1)
+theme_tron(ex1)
+theme_tron_legacy(ex1)
+theme_vader(ex1)
+theme_vanilla(ex1)
+theme_zebra(ex1)
+```
+
+Junção dos comandos
+```{r}
+ex1 <- flextable(rbind(head(iris, n = 7),tail(iris,n=6))) %>% 
+  set_header_labels(Sepal.Length="Comprimento",Sepal.Width="Largura",
+                    Petal.Length="Comprimento",Petal.Width="Largura",Species="Espécie")%>%
+  add_header(Sepal.Length="Sépala",Sepal.Width="Sépala",
+             Petal.Length="Pétala",Petal.Width="Pétala",Species="Espécie")%>%
+  merge_at(i=1:2,j=5,part="header")%>% #Mescla linhas 1 e 2 da coluna 5 do cabeçalho
+  merge_at(i=1,j=1:2,part="header")%>% #Mescla colunas 1 e 2 da linha 1 do cabeçalho
+  merge_at(i=1,j=3:4,part="header")%>% #Mescla colunas 3 e 5 da coluna 1 do cabeçalho
+  theme_vanilla()%>% #Escolha do design
+  align(align = "center", part = "all" )%>% #Alinhamento
+  height(height= 0.30)%>% #Altura das linhas
+  width(width = 1)%>% #Largura das colunas
+  font(part = "all", fontname = "Calibri")%>% #Escolha do tipo de fonte
+  fontsize(part = "all", size = 12) #Tamanho da fonte
+ex1
+```
